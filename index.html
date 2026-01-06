@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PontoView • Orientações</title>
+
+  <!-- Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Material Icons Outlined -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+
+  <!-- BASE ÚNICA (seu padrão) -->
+  <link rel="stylesheet" href="./pv-base.css">
+
+  <!-- CSS só do painel Orientações (mínimo) -->
+  <style>
+    /* Opcional: ajustar o gradiente do header especificamente deste painel */
+    :root{
+      --pvHeaderGrad: linear-gradient(180deg, #2c6aa3 0%, #0f3d63 42%, #0b2a44 100%);
+    }
+
+    .pvCard{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .pvCardHeader{
+      padding: calc(var(--pad) * .78) var(--pad);
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(10,34,50,.04), rgba(10,34,50,0));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex:0 0 auto;
+      min-width:0;
+    }
+
+    .pvCardHeader .label{
+      font-size: var(--t-sub);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color:#1f2a44;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .pvHeaderDots{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex:0 0 auto;
+    }
+    .pvHeaderDots span{
+      width:10px;height:10px;border-radius:999px;
+      background: rgba(15,23,42,.12);
+    }
+    .pvHeaderDots span.active{
+      width:22px;
+      background:#2c6aa3;
+    }
+
+    .pvCardBody{
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: calc(var(--pad) * 1.15);
+      overflow:hidden;
+    }
+
+    .pvMsgBox{
+      width:min(1200px, 92%);
+      text-align:center;
+    }
+
+    .pvMsgPrimary{
+      margin:0;
+      font-weight: 900;
+      color: var(--ink);
+      font-size: clamp(30px, 4.2vw, 60px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0px);
+      transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
+    }
+
+    .pvMsgSecondary{
+      margin: 12px 0 0;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #3b4b62;
+      font-size: clamp(12px, 1.8vw, 18px);
+      opacity: .72;
+      transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
+    }
+
+    /* Estado de troca (aplicado no container) */
+    .pvFadeOut .pvMsgPrimary,
+    .pvFadeOut .pvMsgSecondary{
+      opacity: 0;
+      transform: translateY(6px);
+      filter: blur(1px);
+    }
+
+    .pvProgressWrap{
+      width:min(900px, 72%);
+      margin: 18px auto 0;
+      padding: 8px 10px;
+      border-radius:999px;
+      background: #f6f8fc;
+      border:1px solid rgba(15,23,42,.08);
+    }
+    .pvProgress{
+      height: 8px;
+      border-radius:999px;
+      background: rgba(15,23,42,.10);
+      overflow:hidden;
+    }
+    .pvBar{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background:#2c6aa3;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .pvMsgPrimary, .pvMsgSecondary{ transition:none; }
+      .pvBar{ transition:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pvPage">
+    <div class="pvShell" role="application" aria-label="Painel PontoView Orientações">
+
+      <!-- Header padrão -->
+      <header class="pvHeader">
+        <div class="pvHeaderLeft">
+          <div class="pvIconBadge" aria-hidden="true">
+            <span class="material-icons-outlined">info</span>
+          </div>
+          <div class="pvTitles">
+            <h1 class="pvTitle">ORIENTAÇÕES</h1>
+            <div class="pvSubtitle">GERAL • VYRE</div>
+          </div>
+        </div>
+
+        <div class="pvHeaderRight" aria-label="Horário">
+          <div class="pvClock" id="clock">--:--</div>
+        </div>
+      </header>
+
+      <!-- Subbar padrão -->
+      <div class="pvSubbar">
+        <div class="pvSubLeft">HOJE • BOAS PRÁTICAS</div>
+        <div class="pvSubRight">
+          <span class="pvPill" title="Conteúdo padrão Vyre">
+            <span class="pvDot" aria-hidden="true"></span>
+            FONTE • VYRE
+          </span>
+        </div>
+      </div>
+
+      <!-- Content padrão -->
+      <main class="pvContent">
+        <section class="pvCard" aria-label="Cartão de orientações">
+          <div class="pvCardHeader">
+            <div class="label">MENSAGEM • AGORA</div>
+            <div class="pvHeaderDots" aria-hidden="true">
+              <span></span><span></span><span class="active"></span>
+            </div>
+          </div>
+
+          <div class="pvCardBody" id="stage">
+            <div class="pvMsgBox">
+              <p class="pvMsgPrimary" id="msgPrimary">Aguarde ser chamado</p>
+              <p class="pvMsgSecondary" id="msgSecondary">Acompanhe as informações exibidas neste painel</p>
+
+              <div class="pvProgressWrap" aria-hidden="true">
+                <div class="pvProgress"><div class="pvBar" id="bar"></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer padrão -->
+      <footer class="pvFooter" aria-label="Rodapé">
+        <div class="pvFooterLeft" id="updated">ATUALIZADO • --/--, --:--</div>
+        <div class="pvFooterRight">
+          <img class="pvLogo" src="./assets/logo-pontoview.png" alt="PontoView" onerror="this.style.display='none'">
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * CONFIG
+     ***********************/
+    const ROTATE_EVERY_MS = 12000;   // 10–15s recomendado
+    const TRANSITION_MS = 520;       // manter alinhado ao CSS
+    const SECONDARY_MODE = "static"; // "static" | "none" | "rotate"
+    const SECONDARY_STATIC_TEXT = "Acompanhe as informações exibidas neste painel";
+
+    const ORIENTACOES = [
+      "Respeite a ordem de atendimento",
+      "Aguarde ser chamado",
+      "Em caso de dúvidas, procure um atendente",
+      "Mantenha seus dados atualizados",
+      "Confira as informações exibidas no local",
+      "Atenção aos avisos disponíveis neste ambiente",
+      "Mantenha o ambiente organizado",
+      "Respeite o espaço das outras pessoas",
+      "Evite falar ao celular em voz alta",
+      "Mantenha o volume do celular no modo silencioso",
+      "Colabore para um ambiente mais agradável",
+      "Seja gentil e paciente",
+      "Cuide de seus pertences pessoais",
+      "Este ambiente pode ser monitorado",
+      "Atenção à sinalização do local",
+      "Em caso de emergência, siga as orientações da equipe",
+      "Mantenha as áreas de circulação livres",
+      "Evite correr em áreas internas",
+      "Higienize as mãos sempre que possível",
+      "Utilize álcool em gel quando disponível",
+      "Caso não se sinta bem, informe um responsável",
+      "Colabore com as medidas de segurança do local",
+      "Acompanhe as informações exibidas neste painel",
+      "Este painel é atualizado automaticamente",
+      "As informações exibidas podem sofrer alterações",
+      "Aguarde novas orientações",
+      "Respeito é fundamental para uma boa convivência",
+      "A colaboração de todos faz a diferença",
+      "Pequenas atitudes tornam o ambiente melhor",
+      "Sua compreensão é importante"
+    ];
+
+    const SECONDARIAS = [
+      "Obrigado por colaborar.",
+      "Sua atenção faz a diferença.",
+      "Siga a sinalização do local.",
+      "Em caso de dúvida, procure a equipe.",
+      "Aguarde as próximas informações."
+    ];
+
+    /***********************
+     * ELEMENTOS
+     ***********************/
+    const stage = document.getElementById("stage");
+    const msgPrimary = document.getElementById("msgPrimary");
+    const msgSecondary = document.getElementById("msgSecondary");
+    const bar = document.getElementById("bar");
+    const clockEl = document.getElementById("clock");
+    const updatedEl = document.getElementById("updated");
+
+    /***********************
+     * UTIL
+     ***********************/
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    function formatClock(d){
+      return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+    function formatUpdated(d){
+      return `ATUALIZADO • ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}, ${formatClock(d)}`;
+    }
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    /***********************
+     * CLOCK + UPDATED
+     ***********************/
+    function tick(){
+      const d = new Date();
+      clockEl.textContent = formatClock(d);
+      updatedEl.textContent = formatUpdated(d);
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    /***********************
+     * ROTATION (com shuffle)
+     ***********************/
+    let pool = shuffle(ORIENTACOES);
+    let idx = 0;
+    let lastText = null;
+
+    function nextText(){
+      if(idx >= pool.length){
+        pool = shuffle(ORIENTACOES);
+        idx = 0;
+      }
+      let t = pool[idx++];
+      if(t === lastText && pool.length > 1){
+        if(idx >= pool.length){ pool = shuffle(ORIENTACOES); idx = 0; }
+        t = pool[idx++];
+      }
+      lastText = t;
+      return t;
+    }
+
+    function pickSecondary(){
+      if(SECONDARY_MODE === "none") return "";
+      if(SECONDARY_MODE === "static") return SECONDARY_STATIC_TEXT;
+      return SECONDARIAS[Math.floor(Math.random()*SECONDARIAS.length)];
+    }
+
+    /***********************
+     * PROGRESS
+     ***********************/
+    function startProgress(){
+      bar.style.transition = "none";
+      bar.style.width = "0%";
+      bar.offsetHeight; // reflow
+      bar.style.transition = `width ${ROTATE_EVERY_MS}ms linear`;
+      bar.style.width = "100%";
+    }
+
+    /***********************
+     * TRANSITION
+     ***********************/
+    function setMessage(primary, secondary){
+      stage.classList.add("pvFadeOut");
+      setTimeout(() => {
+        msgPrimary.textContent = primary;
+
+        const sec = (secondary || "").trim();
+        if(sec){
+          msgSecondary.style.display = "";
+          msgSecondary.textContent = sec;
+        }else{
+          msgSecondary.style.display = "none";
+        }
+
+        stage.classList.remove("pvFadeOut");
+      }, TRANSITION_MS);
+    }
+
+    function rotateOnce(){
+      setMessage(nextText(), pickSecondary());
+      startProgress();
+    }
+
+    // Start
+    setMessage(nextText(), pickSecondary());
+    startProgress();
+    setInterval(rotateOnce, ROTATE_EVERY_MS);
+  </script>
+</body>
+</html>
