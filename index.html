@@ -13,24 +13,16 @@
   <!-- Material Icons Outlined -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 
-  <!-- BASE ÚNICA (seu padrão) -->
-  <link rel="stylesheet" href="./css/pv-base.css">
+  <!-- SEU CSS (na pasta /css) -->
+  <link rel="stylesheet" href="css/pv-base.css">
 
-  <!-- CSS só do painel Orientações (mínimo) -->
+  <!-- CSS mínimo só do painel (mensagem + progress + offline overlay) -->
   <style>
-    /* Opcional: ajustar o gradiente do header especificamente deste painel */
-    :root{
-      --pvHeaderGrad: linear-gradient(180deg, #2c6aa3 0%, #0f3d63 42%, #0b2a44 100%);
-    }
-
-    .pvCard{
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
+    /* Mantém o padrão do base, só garante que o card vire “palco” do overlay */
+    .pvCard{ position:relative; display:flex; flex-direction:column; min-height:0; }
 
     .pvCardHeader{
-      padding: calc(var(--pad) * .78) var(--pad);
+      padding: calc(var(--pad) * .62) var(--pad);
       border-bottom:1px solid var(--line);
       background: linear-gradient(180deg, rgba(10,34,50,.04), rgba(10,34,50,0));
       display:flex;
@@ -40,7 +32,6 @@
       flex:0 0 auto;
       min-width:0;
     }
-
     .pvCardHeader .label{
       font-size: var(--t-sub);
       font-weight: 900;
@@ -51,20 +42,15 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
     .pvHeaderDots{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      flex:0 0 auto;
+      display:flex; align-items:center; gap:6px; flex:0 0 auto;
     }
     .pvHeaderDots span{
       width:10px;height:10px;border-radius:999px;
       background: rgba(15,23,42,.12);
     }
     .pvHeaderDots span.active{
-      width:22px;
-      background:#2c6aa3;
+      width:22px; background:#2c6aa3;
     }
 
     .pvCardBody{
@@ -77,11 +63,7 @@
       overflow:hidden;
     }
 
-    .pvMsgBox{
-      width:min(1200px, 92%);
-      text-align:center;
-    }
-
+    .pvMsgBox{ width:min(1200px, 92%); text-align:center; }
     .pvMsgPrimary{
       margin:0;
       font-weight: 900;
@@ -94,7 +76,6 @@
       filter: blur(0px);
       transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
     }
-
     .pvMsgSecondary{
       margin: 12px 0 0;
       font-weight: 900;
@@ -106,7 +87,7 @@
       transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
     }
 
-    /* Estado de troca (aplicado no container) */
+    /* Estado de troca */
     .pvFadeOut .pvMsgPrimary,
     .pvFadeOut .pvMsgSecondary{
       opacity: 0;
@@ -114,6 +95,7 @@
       filter: blur(1px);
     }
 
+    /* Progress */
     .pvProgressWrap{
       width:min(900px, 72%);
       margin: 18px auto 0;
@@ -133,6 +115,70 @@
       width:0%;
       border-radius:999px;
       background:#2c6aa3;
+    }
+
+    /* ===== OFFLINE OVERLAY (fallback dentro do mesmo painel) ===== */
+    .pvOffline{
+      position:absolute;
+      inset:0;
+      display:none;            /* aparece via JS */
+      align-items:center;
+      justify-content:center;
+      padding: var(--pad);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 5;
+    }
+    .pvOfflineCard{
+      width: min(980px, 92%);
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background:#fff;
+      box-shadow: 0 14px 40px rgba(0,0,0,.10);
+      padding: clamp(18px, 2.2vw, 30px);
+      display:flex;
+      gap: 18px;
+      align-items:flex-start;
+    }
+    .pvOfflineIcon{
+      width: 54px; height: 54px;
+      border-radius: 16px;
+      background: rgba(239,68,68,.10);
+      border:1px solid rgba(239,68,68,.25);
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
+    .pvOfflineIcon .material-icons-outlined{
+      font-size: 28px;
+      color:#ef4444;
+      opacity:.95;
+    }
+    .pvOfflineTitle{
+      margin:0;
+      font-weight: 900;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      font-size: clamp(16px, 1.6vw, 22px);
+      color:#0f172a;
+    }
+    .pvOfflineText{
+      margin:10px 0 0;
+      color:#334155;
+      font-weight:700;
+      font-size: clamp(14px, 1.5vw, 18px);
+      line-height:1.35;
+      opacity:.9;
+    }
+    .pvOfflineHint{
+      margin:10px 0 0;
+      color:#475569;
+      font-weight:800;
+      font-size: clamp(12px, 1.2vw, 14px);
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      opacity:.75;
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -167,8 +213,11 @@
       <div class="pvSubbar">
         <div class="pvSubLeft">HOJE • BOAS PRÁTICAS</div>
         <div class="pvSubRight">
-          <span class="pvPill" title="Conteúdo padrão Vyre">
-            <span class="pvDot" aria-hidden="true"></span>
+          <span class="pvPill" title="Status de conexão">
+            <span class="pvDot" id="netDot" aria-hidden="true"></span>
+            <span id="netText">ONLINE</span>
+          </span>
+          <span class="pvPill" title="Fonte do conteúdo">
             FONTE • VYRE
           </span>
         </div>
@@ -176,7 +225,7 @@
 
       <!-- Content padrão -->
       <main class="pvContent">
-        <section class="pvCard" aria-label="Cartão de orientações">
+        <section class="pvCard" aria-label="Cartão de orientações" id="card">
           <div class="pvCardHeader">
             <div class="label">MENSAGEM • AGORA</div>
             <div class="pvHeaderDots" aria-hidden="true">
@@ -194,6 +243,23 @@
               </div>
             </div>
           </div>
+
+          <!-- FALLBACK OFFLINE (fica dentro do mesmo pvCard) -->
+          <div class="pvOffline" id="offlineLayer" aria-hidden="true">
+            <div class="pvOfflineCard" role="status" aria-label="Modo offline">
+              <div class="pvOfflineIcon" aria-hidden="true">
+                <span class="material-icons-outlined">wifi_off</span>
+              </div>
+              <div>
+                <p class="pvOfflineTitle">MODO OFFLINE</p>
+                <p class="pvOfflineText">
+                  Sem conexão com a internet no momento. O painel continuará exibindo informações locais e será retomado automaticamente quando a conexão voltar.
+                </p>
+                <p class="pvOfflineHint">verificando conexão…</p>
+              </div>
+            </div>
+          </div>
+
         </section>
       </main>
 
@@ -201,7 +267,7 @@
       <footer class="pvFooter" aria-label="Rodapé">
         <div class="pvFooterLeft" id="updated">ATUALIZADO • --/--, --:--</div>
         <div class="pvFooterRight">
-          <img class="pvLogo" src="./assets/logo-pontoview.png" alt="PontoView" onerror="this.style.display='none'">
+          <img class="pvLogo" src="assets/logo-pontoview.png" alt="PontoView" onerror="this.style.display='none'">
         </div>
       </footer>
 
@@ -212,8 +278,8 @@
     /***********************
      * CONFIG
      ***********************/
-    const ROTATE_EVERY_MS = 12000;   // 10–15s recomendado
-    const TRANSITION_MS = 520;       // manter alinhado ao CSS
+    const ROTATE_EVERY_MS = 12000;
+    const TRANSITION_MS = 520;
     const SECONDARY_MODE = "static"; // "static" | "none" | "rotate"
     const SECONDARY_STATIC_TEXT = "Acompanhe as informações exibidas neste painel";
 
@@ -268,6 +334,10 @@
     const clockEl = document.getElementById("clock");
     const updatedEl = document.getElementById("updated");
 
+    const netDot = document.getElementById("netDot");
+    const netText = document.getElementById("netText");
+    const offlineLayer = document.getElementById("offlineLayer");
+
     /***********************
      * UTIL
      ***********************/
@@ -300,7 +370,7 @@
     setInterval(tick, 1000);
 
     /***********************
-     * ROTATION (com shuffle)
+     * ROTATION
      ***********************/
     let pool = shuffle(ORIENTACOES);
     let idx = 0;
@@ -326,20 +396,14 @@
       return SECONDARIAS[Math.floor(Math.random()*SECONDARIAS.length)];
     }
 
-    /***********************
-     * PROGRESS
-     ***********************/
     function startProgress(){
       bar.style.transition = "none";
       bar.style.width = "0%";
-      bar.offsetHeight; // reflow
+      bar.offsetHeight;
       bar.style.transition = `width ${ROTATE_EVERY_MS}ms linear`;
       bar.style.width = "100%";
     }
 
-    /***********************
-     * TRANSITION
-     ***********************/
     function setMessage(primary, secondary){
       stage.classList.add("pvFadeOut");
       setTimeout(() => {
@@ -362,10 +426,38 @@
       startProgress();
     }
 
-    // Start
     setMessage(nextText(), pickSecondary());
     startProgress();
     setInterval(rotateOnce, ROTATE_EVERY_MS);
+
+    /***********************
+     * FALLBACK OFFLINE (no mesmo painel)
+     ***********************/
+    function setOnlineUI(isOnline){
+      // Pill
+      netText.textContent = isOnline ? "ONLINE" : "OFFLINE";
+      if(isOnline){
+        netDot.classList.remove("off");
+      }else{
+        netDot.classList.add("off");
+      }
+
+      // Overlay
+      offlineLayer.style.display = isOnline ? "none" : "flex";
+      offlineLayer.setAttribute("aria-hidden", isOnline ? "true" : "false");
+    }
+
+    // Estado inicial
+    setOnlineUI(navigator.onLine);
+
+    // Eventos do browser
+    window.addEventListener("online",  () => setOnlineUI(true));
+    window.addEventListener("offline", () => setOnlineUI(false));
+
+    // “Sanidade”: checagem periódica (evita ficar preso em estado errado em algumas TVs)
+    setInterval(() => {
+      setOnlineUI(navigator.onLine);
+    }, 5000);
   </script>
 </body>
 </html>
