@@ -8,58 +8,205 @@
   <!-- Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800;900&display=swap" rel="stylesheet"/>
 
-  <!-- Material Icons Outlined -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+  <!-- Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,650,0,0" />
 
-  <!-- SEU CSS (na pasta /css) -->
-  <link rel="stylesheet" href="css/pv-base.css">
-
-  <!-- CSS mínimo só do painel (mensagem + progress + offline overlay) -->
   <style>
-    /* Mantém o padrão do base, só garante que o card vire “palco” do overlay */
-    .pvCard{ position:relative; display:flex; flex-direction:column; min-height:0; }
+    :root{
+      --ink:#0b1626;
 
-    .pvCardHeader{
-      padding: calc(var(--pad) * .62) var(--pad);
-      border-bottom:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(10,34,50,.04), rgba(10,34,50,0));
+      --topA:#0b2a44;
+      --topB:#2c6aa3;
+      --topC:#0f3d63;
+
+      --pad: clamp(14px, 1.8vw, 26px);
+      --gap: clamp(12px, 1.4vw, 18px);
+
+      --panel:#e7edf5;
+      --card: rgba(255,255,255,.78);
+      --line: rgba(210,222,238,.95);
+
+      --radius: clamp(24px, 2.2vw, 36px);
+      --footerH: clamp(54px, 6vh, 78px);
+
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --anim: 520ms;
+
+      --dividerGrad: linear-gradient(90deg,
+        rgba(44,106,163,0) 0%,
+        rgba(44,106,163,.9) 18%,
+        rgba(15,61,99,.95) 50%,
+        rgba(44,106,163,.9) 82%,
+        rgba(44,106,163,0) 100%
+      );
+
+      --bad:#ef4444;
+      --badBg: rgba(239,68,68,.12);
+      --badLine: rgba(239,68,68,.24);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--ink);
+      background:#fff;
+      overflow:hidden;
+    }
+
+    .pvShell{
+      width:100vw;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      background:#fff;
+    }
+
+    /* ================= HEADER ================= */
+    .pvHeader{
+      position:relative;
+      background: linear-gradient(180deg, var(--topB) 0%, var(--topC) 42%, var(--topA) 100%);
+      color:#fff;
+      padding: clamp(14px, 1.8vw, 22px) var(--pad);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:var(--gap);
+      flex:0 0 auto;
+      min-width:0;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,.18);
+    }
+    .pvHeader::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 120px at 50% 0%, rgba(255,255,255,.22), rgba(255,255,255,0) 65%),
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,0) 42%);
+      opacity:.95;
+    }
+
+    .pvHeaderLeft{position:relative; z-index:1;}
+    .pvHeaderLeft{
+      display:flex;
+      align-items:center;
+      gap: clamp(12px, 1.5vw, 18px);
+      min-width:0;
+      flex:1 1 auto;
+    }
+
+    .pvIconBadge{
+      width: clamp(44px, 4.2vw, 64px);
+      height: clamp(44px, 4.2vw, 64px);
+      border-radius: 18px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.24);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.20), 0 14px 28px rgba(0,0,0,.14);
+      backdrop-filter: blur(10px);
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      color:#fff;
+    }
+    .pvIconBadge .material-symbols-outlined{
+      font-size: 34px;
+      line-height: 1;
+      color:#fff;
+      font-variation-settings:'FILL' 0,'wght' 650,'GRAD' 0,'opsz' 24;
+      opacity:.98;
+    }
+
+    .pvTitles{display:flex; flex-direction:column; gap:6px; min-width:0;}
+    .pvTitle{
+      margin:0;
+      font-size: clamp(18px, 2.1vw, 34px);
+      font-weight:900;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      line-height:1.02;
+    }
+
+    /* ================= MAIN ================= */
+    .pvMain{
+      flex:1 1 auto;
+      min-height:0;
+      padding: var(--pad);
+      display:flex;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .panel{
+      width:100%;
+      min-height:0;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(231,237,245,1), rgba(223,232,244,1));
+      padding: clamp(12px, 1.4vw, 18px);
+      overflow:hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+      align-items:stretch;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 26px rgba(2,10,23,.10);
+      backdrop-filter: blur(7px);
+      position:relative; /* palco pro offline overlay */
+    }
+
+    .cardHeader{
+      padding: clamp(16px, 1.8vw, 22px);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 12px;
       flex:0 0 auto;
       min-width:0;
+      background: transparent;
     }
-    .pvCardHeader .label{
-      font-size: var(--t-sub);
+    .cardHeader .label{
+      font-size: 12px;
       font-weight: 900;
-      letter-spacing: .12em;
+      letter-spacing:.14em;
       text-transform: uppercase;
-      color:#1f2a44;
+      color:#3b4b62;
       white-space:nowrap;
+      min-width:0;
       overflow:hidden;
       text-overflow:ellipsis;
+      opacity:.95;
     }
-    .pvHeaderDots{
-      display:flex; align-items:center; gap:6px; flex:0 0 auto;
+    .toggleDots{display:flex; gap:8px; align-items:center;}
+    .tdot{
+      width:10px; height:10px; border-radius:999px;
+      background:#c9d7ea;
+      transition: all 420ms var(--ease);
     }
-    .pvHeaderDots span{
-      width:10px;height:10px;border-radius:999px;
-      background: rgba(15,23,42,.12);
-    }
-    .pvHeaderDots span.active{
-      width:22px; background:#2c6aa3;
-    }
+    .tdot.active{background:#2d76b9; width:22px;}
 
-    .pvCardBody{
+    .cardBody{
       flex:1 1 auto;
       min-height:0;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: calc(var(--pad) * 1.15);
+      padding: clamp(18px, 2.2vw, 30px);
       overflow:hidden;
     }
 
@@ -74,7 +221,7 @@
       opacity: 1;
       transform: translateY(0);
       filter: blur(0px);
-      transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
+      transition: opacity var(--anim) var(--ease), transform var(--anim) var(--ease), filter var(--anim) var(--ease);
     }
     .pvMsgSecondary{
       margin: 12px 0 0;
@@ -84,10 +231,9 @@
       color: #3b4b62;
       font-size: clamp(12px, 1.8vw, 18px);
       opacity: .72;
-      transition: opacity 520ms ease, transform 520ms ease, filter 520ms ease;
+      transition: opacity var(--anim) var(--ease), transform var(--anim) var(--ease), filter var(--anim) var(--ease);
     }
 
-    /* Estado de troca */
     .pvFadeOut .pvMsgPrimary,
     .pvFadeOut .pvMsgSecondary{
       opacity: 0;
@@ -95,33 +241,34 @@
       filter: blur(1px);
     }
 
-    /* Progress */
-    .pvProgressWrap{
-      width:min(900px, 72%);
+    /* progress interno */
+    .progressWrap{
+      width:min(980px, 78%);
       margin: 18px auto 0;
-      padding: 8px 10px;
-      border-radius:999px;
-      background: #f6f8fc;
-      border:1px solid rgba(15,23,42,.08);
     }
-    .pvProgress{
-      height: 8px;
-      border-radius:999px;
-      background: rgba(15,23,42,.10);
+    .divider{
+      height: 4px;
+      border-radius: 999px;
+      background: var(--dividerGrad);
+      position:relative;
       overflow:hidden;
     }
-    .pvBar{
-      height:100%;
+    .barFill{
+      position:absolute;
+      inset:0;
       width:0%;
-      border-radius:999px;
-      background:#2c6aa3;
+      background: linear-gradient(90deg, rgba(255,255,255,.16), rgba(255,255,255,.38));
+      mix-blend-mode: screen;
+      border-radius: 999px;
+      transition: width 120ms linear;
+      transform-origin:left center;
     }
 
-    /* ===== OFFLINE OVERLAY (fallback dentro do mesmo painel) ===== */
+    /* ===== OFFLINE OVERLAY ===== */
     .pvOffline{
       position:absolute;
       inset:0;
-      display:none;            /* aparece via JS */
+      display:none;
       align-items:center;
       justify-content:center;
       padding: var(--pad);
@@ -132,27 +279,29 @@
     }
     .pvOfflineCard{
       width: min(980px, 92%);
-      border-radius: 18px;
+      border-radius: 20px;
       border:1px solid var(--line);
-      background:#fff;
+      background: rgba(255,255,255,.86);
       box-shadow: 0 14px 40px rgba(0,0,0,.10);
       padding: clamp(18px, 2.2vw, 30px);
       display:flex;
       gap: 18px;
       align-items:flex-start;
+      backdrop-filter: blur(8px);
     }
     .pvOfflineIcon{
       width: 54px; height: 54px;
       border-radius: 16px;
-      background: rgba(239,68,68,.10);
-      border:1px solid rgba(239,68,68,.25);
+      background: var(--badBg);
+      border:1px solid var(--badLine);
       display:grid;
       place-items:center;
       flex:0 0 auto;
+      color: var(--bad);
     }
-    .pvOfflineIcon .material-icons-outlined{
+    .pvOfflineIcon .material-symbols-outlined{
       font-size: 28px;
-      color:#ef4444;
+      font-variation-settings:'FILL' 0,'wght' 650,'GRAD' 0,'opsz' 24;
       opacity:.95;
     }
     .pvOfflineTitle{
@@ -166,79 +315,99 @@
     .pvOfflineText{
       margin:10px 0 0;
       color:#334155;
-      font-weight:700;
+      font-weight:800;
       font-size: clamp(14px, 1.5vw, 18px);
       line-height:1.35;
-      opacity:.9;
+      opacity:.92;
     }
     .pvOfflineHint{
       margin:10px 0 0;
       color:#475569;
-      font-weight:800;
+      font-weight:900;
       font-size: clamp(12px, 1.2vw, 14px);
       letter-spacing:.08em;
       text-transform: uppercase;
       opacity:.75;
     }
 
+    /* ===== progress acima do rodapé ===== */
+    .pvFooterProgress{
+      flex:0 0 auto;
+      padding: 0 var(--pad);
+      background:#fff;
+    }
+
+    /* ===== FOOTER (logo canto inferior direito) ===== */
+    .pvFooter{
+      flex:0 0 auto;
+      height: var(--footerH);
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding: 10px var(--pad);
+      background:#fff;
+      gap: 12px;
+      min-width:0;
+    }
+    .pvLogo{
+      height: clamp(16px, 2.3vh, 22px);
+      width:auto;
+      display:block;
+      opacity:.92;
+    }
+
+    @media (orientation: portrait){
+      .pvMsgPrimary{ font-size: clamp(28px, 6.2vw, 56px); }
+      .progressWrap{ width:min(980px, 88%); }
+    }
+
     @media (prefers-reduced-motion: reduce){
       .pvMsgPrimary, .pvMsgSecondary{ transition:none; }
-      .pvBar{ transition:none !important; }
+      .barFill{ transition:none !important; }
     }
   </style>
 </head>
 
 <body>
-  <div class="pvPage">
-    <div class="pvShell" role="application" aria-label="Painel PontoView Orientações">
-
-      <!-- Header padrão -->
-      <header class="pvHeader">
-        <div class="pvHeaderLeft">
-          <div class="pvIconBadge" aria-hidden="true">
-            <span class="material-icons-outlined">info</span>
-          </div>
-          <div class="pvTitles">
-            <h1 class="pvTitle">ORIENTAÇÕES</h1>
-          </div>
+  <div class="pvShell" id="panel" data-title="ORIENTAÇÕES">
+    <header class="pvHeader">
+      <div class="pvHeaderLeft">
+        <div class="pvIconBadge" aria-hidden="true">
+          <span class="material-symbols-outlined">info</span>
         </div>
-
-        <div class="pvHeaderRight" aria-label="Horário">
-          <div class="pvClock" id="clock">--:--</div>
-        </div>
-      </header>
-
-      <!-- Subbar padrão -->
-      <div class="pvSubbar">
-        <div class="pvSubLeft">BOAS PRÁTICAS</div>
-        <div class="pvSubRight">
-          <span class="pvPill" title="Status de conexão">
-            <span class="pvDot" id="netDot" aria-hidden="true"></span>
-            <span id="netText">ONLINE</span>
-          </span>
+        <div class="pvTitles">
+          <h1 class="pvTitle" id="title"></h1>
         </div>
       </div>
+    </header>
 
-      <!-- Content padrão -->
-      <main class="pvContent">
-        <section class="pvCard" aria-label="Cartão de orientações" id="card">
+    <main class="pvMain">
+      <div class="panel">
+        <section class="card" aria-label="Cartão de orientações" id="card">
+          <div class="cardHeader">
+            <div class="label">BOAS PRÁTICAS</div>
+            <div class="toggleDots" aria-hidden="true">
+              <div class="tdot active" id="dotA"></div>
+              <div class="tdot" id="dotB"></div>
+            </div>
+          </div>
 
-          <div class="pvCardBody" id="stage">
+          <div class="cardBody" id="stage">
             <div class="pvMsgBox">
               <p class="pvMsgPrimary" id="msgPrimary">Aguarde ser chamado</p>
               <p class="pvMsgSecondary" id="msgSecondary">Acompanhe as informações exibidas neste painel</p>
 
-              <div class="pvProgressWrap" aria-hidden="true">
-                <div class="pvProgress"><div class="pvBar" id="bar"></div></div>
+              <div class="progressWrap" aria-hidden="true">
+                <div class="divider"><div class="barFill" id="barFill"></div></div>
               </div>
             </div>
           </div>
 
-          <!-- FALLBACK OFFLINE (fica dentro do mesmo pvCard) -->
+          <!-- OFFLINE OVERLAY (sem badge de online/offline) -->
           <div class="pvOffline" id="offlineLayer" aria-hidden="true">
             <div class="pvOfflineCard" role="status" aria-label="Modo offline">
               <div class="pvOfflineIcon" aria-hidden="true">
-                <span class="material-icons-outlined">wifi_off</span>
+                <span class="material-symbols-outlined">wifi_off</span>
               </div>
               <div>
                 <p class="pvOfflineTitle">MODO OFFLINE</p>
@@ -251,17 +420,16 @@
           </div>
 
         </section>
-      </main>
+      </div>
+    </main>
 
-      <!-- Footer padrão -->
-      <footer class="pvFooter" aria-label="Rodapé">
-        
-        <div class="pvFooterRight">
-          <img class="pvLogo" src="assets/logo-pontoview.png" alt="PontoView" onerror="this.style.display='none'">
-        </div>
-      </footer>
-
+    <div class="pvFooterProgress" aria-hidden="true">
+      <div class="divider"><div class="barFill" id="cycleFill"></div></div>
     </div>
+
+    <footer class="pvFooter" aria-label="Rodapé">
+      <img class="pvLogo" src="assets/logo-pontoview.png" alt="PontoView" onerror="this.style.display='none'">
+    </footer>
   </div>
 
   <script>
@@ -270,6 +438,7 @@
      ***********************/
     const ROTATE_EVERY_MS = 20000;
     const TRANSITION_MS = 520;
+
     const SECONDARY_MODE = "rotate"; // "static" | "none" | "rotate"
     const SECONDARY_STATIC_TEXT = "Acompanhe as informações exibidas neste painel";
 
@@ -316,25 +485,27 @@
     const stage = document.getElementById("stage");
     const msgPrimary = document.getElementById("msgPrimary");
     const msgSecondary = document.getElementById("msgSecondary");
-    const bar = document.getElementById("bar");
-    const clockEl = document.getElementById("clock");
-    const updatedEl = document.getElementById("updated");
 
-    const netDot = document.getElementById("netDot");
-    const netText = document.getElementById("netText");
     const offlineLayer = document.getElementById("offlineLayer");
+
+    // progress interno (no card)
+    const barFill = document.getElementById("barFill");
+    // progress do ciclo (linha acima do rodapé)
+    const cycleFill = document.getElementById("cycleFill");
+
+    // dots
+    const dotA = document.getElementById("dotA");
+    const dotB = document.getElementById("dotB");
+
+    /***********************
+     * TITLE
+     ***********************/
+    document.getElementById("title").textContent =
+      document.getElementById("panel").dataset.title || "ORIENTAÇÕES";
 
     /***********************
      * UTIL
      ***********************/
-    const pad2 = (n) => String(n).padStart(2, "0");
-
-    function formatClock(d){
-      return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-    }
-    function formatUpdated(d){
-      return `ATUALIZADO • ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}, ${formatClock(d)}`;
-    }
     function shuffle(arr){
       const a = arr.slice();
       for(let i=a.length-1;i>0;i--){
@@ -345,18 +516,7 @@
     }
 
     /***********************
-     * CLOCK + UPDATED
-     ***********************/
-    function tick(){
-      const d = new Date();
-      clockEl.textContent = formatClock(d);
-      updatedEl.textContent = formatUpdated(d);
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    /***********************
-     * ROTATION
+     * ROTATION (mensagens)
      ***********************/
     let pool = shuffle(ORIENTACOES);
     let idx = 0;
@@ -382,13 +542,17 @@
       return SECONDARIAS[Math.floor(Math.random()*SECONDARIAS.length)];
     }
 
-    function startProgress(){
-      bar.style.transition = "none";
-      bar.style.width = "0%";
-      bar.offsetHeight;
-      bar.style.transition = `width ${ROTATE_EVERY_MS}ms linear`;
-      bar.style.width = "100%";
+    // progress interno + ciclo
+    let rotStart = performance.now();
+
+    function setProgressWidths(now){
+      const p = ((now - rotStart) % ROTATE_EVERY_MS) / ROTATE_EVERY_MS;
+      const w = Math.max(2, p * 100);
+      barFill.style.width = `${w}%`;
+      cycleFill.style.width = `${w}%`;
+      requestAnimationFrame(setProgressWidths);
     }
+    requestAnimationFrame(setProgressWidths);
 
     function setMessage(primary, secondary){
       stage.classList.add("pvFadeOut");
@@ -407,43 +571,36 @@
       }, TRANSITION_MS);
     }
 
-    function rotateOnce(){
-      setMessage(nextText(), pickSecondary());
-      startProgress();
+    function flipDots(){
+      const aActive = dotA.classList.contains("active");
+      dotA.classList.toggle("active", !aActive);
+      dotB.classList.toggle("active", aActive);
     }
 
+    function rotateOnce(){
+      rotStart = performance.now();
+      flipDots();
+      setMessage(nextText(), pickSecondary());
+    }
+
+    // start
     setMessage(nextText(), pickSecondary());
-    startProgress();
+    rotStart = performance.now();
     setInterval(rotateOnce, ROTATE_EVERY_MS);
 
     /***********************
-     * FALLBACK OFFLINE (no mesmo painel)
+     * OFFLINE OVERLAY (sem badge)
      ***********************/
-    function setOnlineUI(isOnline){
-      // Pill
-      netText.textContent = isOnline ? "ONLINE" : "OFFLINE";
-      if(isOnline){
-        netDot.classList.remove("off");
-      }else{
-        netDot.classList.add("off");
-      }
-
-      // Overlay
+    function setOfflineOverlay(){
+      const isOnline = navigator.onLine;
       offlineLayer.style.display = isOnline ? "none" : "flex";
       offlineLayer.setAttribute("aria-hidden", isOnline ? "true" : "false");
     }
 
-    // Estado inicial
-    setOnlineUI(navigator.onLine);
-
-    // Eventos do browser
-    window.addEventListener("online",  () => setOnlineUI(true));
-    window.addEventListener("offline", () => setOnlineUI(false));
-
-    // “Sanidade”: checagem periódica (evita ficar preso em estado errado em algumas TVs)
-    setInterval(() => {
-      setOnlineUI(navigator.onLine);
-    }, 5000);
+    setOfflineOverlay();
+    window.addEventListener("online", setOfflineOverlay);
+    window.addEventListener("offline", setOfflineOverlay);
+    setInterval(setOfflineOverlay, 5000);
   </script>
 </body>
 </html>
